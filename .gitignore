@@ -1,0 +1,22 @@
+# Virtual environments
+.venv/
+venv_subvocal/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Large files and models
+checkpoints/
+cache/
+data/
+*.zip
+*.log
+
+# Audio files
+*.wav
+
+# IDEs
+.vscode/
+.idea/

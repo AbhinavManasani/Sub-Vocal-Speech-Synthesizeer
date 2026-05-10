@@ -1,0 +1,23 @@
+_base_: "base.yaml"
+experiment_name: "phase1_lrw_pretrain"
+
+data:
+  root: "data/LRW"
+  num_classes: 500
+  max_video_frames: 29
+  augment:
+    time_mask: true
+
+model:
+  visual_encoder:
+    out_dim: 512
+
+training:
+  batch_size: 2
+  max_epochs: 1
+  
+  loss:
+    label_smoothing: 0.1
+    
+  optimizer:
+    lr: 0.0003

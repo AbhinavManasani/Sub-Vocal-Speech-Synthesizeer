@@ -1,0 +1,25 @@
+_base_: "phase2_lip2speech.yaml"
+experiment_name: "phase4_muavic_multilingual"
+
+data:
+  muavic_root: "/data/MuAViC"
+  languages: ["en", "fr", "es", "de", "it", "pt", "ru", "ar", "el"]
+  max_hours_per_lang: 10.0
+  balanced_sampling: true
+
+model:
+  visual_encoder:
+    pretrained_path: "checkpoints/phase2_lrs_lip2speech/best.pt"
+    # Unfreeze the last few layers of encoder for multilingual adaptation
+    freeze: false 
+  
+  multilingual:
+    num_languages: 9
+    language_dim: 64
+
+training:
+  batch_size: 16
+  max_epochs: 100
+  
+  optimizer:
+    lr: 0.00005  # Lower LR for fine-tuning

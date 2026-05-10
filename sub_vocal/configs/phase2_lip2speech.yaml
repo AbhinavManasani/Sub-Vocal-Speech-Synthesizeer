@@ -1,0 +1,45 @@
+_base_: "base.yaml"
+experiment_name: "phase2_lrs_lip2speech"
+
+data:
+  lrs3_root: "data/LRS3-TED"
+  max_video_frames: 600
+
+model:
+  visual_encoder:
+    pretrained_path: ""
+    freeze: true
+  
+  decoder:
+    num_layers: 2
+    nhead: 2
+    dim_feedforward: 512
+    mel_dim: 80
+    
+  speaker_embed:
+    dim: 256
+    film_conditioning: true
+    
+  ctc_head:
+    vocab_size: 44
+    enabled: true
+
+training:
+  batch_size: 2
+  accumulate_grad: 1
+  max_epochs: 1
+  
+  loss:
+    mel_l1_weight: 1.0
+    mel_postnet_l1_weight: 1.0
+    ctc_weight: 0.1
+    ssim_weight: 0.5
+    stop_weight: 1.0
+    output_content_on: 10000  # Delay CTC until step 10k
+    
+  optimizer:
+    lr: 0.0001
+    
+  eval:
+    every_n_steps: 5000
+    metrics: ["stoi", "pesq"]

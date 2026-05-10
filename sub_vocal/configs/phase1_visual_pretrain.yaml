@@ -1,0 +1,68 @@
+# Phase 1 — Visual Encoder Pretraining on LRW
+# 500-way word classification, 3D-ResNet frontend
+# Target: top-1 accuracy > 60%
+
+_base_: "base.yaml"
+
+phase: 1
+experiment_name: "phase1_visual_pretrain"
+
+data:
+  dataset: "lrw"
+  root: "/data/LRW"                # LRW dataset root
+  num_classes: 500
+  word_boundary: true              # Use word boundary annotations
+  max_video_frames: 29             # LRW clips are 29 frames
+  augment:
+    horizontal_flip: true
+    random_crop: true
+    time_mask: true                # Random temporal masking
+    crop_size: 88                  # Random crop then resize to 96
+
+model:
+  visual_encoder:
+    backbone: "resnet18"
+    pretrained_2d: true
+    freeze: false
+    out_dim: 512
+
+  # Classification head (Phase 1 only)
+  classifier:
+    enabled: true
+    num_classes: 500
+    dropout: 0.3
+
+  # Disable components not needed in Phase 1
+  decoder:
+    enabled: false
+  speaker_embed:
+    enabled: false
+  ctc_head:
+    enabled: false
+
+training:
+  batch_size: 32
+  max_epochs: 80
+
+  optimizer:
+    type: "adamw"
+    lr: 3.0e-4
+    weight_decay: 0.01
+
+  scheduler:
+    type: "warmup_cosine"
+    warmup_steps: 3000
+    min_lr: 1.0e-6
+
+  loss:
+    type: "cross_entropy"
+    label_smoothing: 0.1
+
+  eval:
+    every_n_steps: 1000
+    metrics: ["accuracy", "top5_accuracy"]
+
+  early_stopping:
+    patience: 20
+    metric: "val_accuracy"
+    mode: "max"

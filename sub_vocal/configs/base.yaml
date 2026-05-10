@@ -1,0 +1,57 @@
+experiment_name: "base_config"
+seed: 42
+device: "cpu"
+num_workers: 0
+
+data:
+  sample_rate: 16000
+  n_mels: 80
+  augment:
+    random_crop: true
+    horizontal_flip: true
+    time_mask: false
+
+model:
+  visual_encoder:
+    backbone: "resnet18"
+    pretrained_2d: true
+    out_dim: 512
+    lrw_pretrained_path: null
+
+training:
+  batch_size: 32
+  max_epochs: 200
+  accumulate_grad: 1
+  gradient_clip: 1.0
+
+  optimizer:
+    type: "adamw"
+    lr: 0.0001
+    weight_decay: 0.01
+
+  scheduler:
+    type: "warmup_cosine"
+    warmup_steps: 5000
+    min_lr: 1.0e-6
+
+  checkpoint:
+    save_dir: "checkpoints"
+    save_every_n_steps: 5000
+    keep_last_k: 5
+    save_best: true
+    best_metric: "val_loss"
+    best_mode: "min"
+
+  early_stopping:
+    enabled: true
+    patience: 15
+    metric: "val_loss"
+
+  eval:
+    every_n_steps: 2000
+    num_eval_samples: 50
+
+logging:
+  use_tensorboard: true
+  log_dir: "runs"
+  log_every_n_steps: 100
